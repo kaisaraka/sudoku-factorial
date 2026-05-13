@@ -76,7 +76,7 @@ function GameEngine() {
   const fetchNewGame = async (level: string) => {
     setLoading(true); setIsActive(false); setGameOver(false); setIsVictory(false); setMistakes(0); setErrors([]); setTime(0);
     try {
-      const res = await fetch(`http://localhost:8000/api/sudoku/generate?difficulty=${level}`);
+      const res = await fetch(`https://neodoku-api.onrender.com/api/sudoku/generate?difficulty=${level}`);
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       setInitialBoard(data.puzzle);
