@@ -2,7 +2,7 @@
 
 **NEODOKU** — это не просто судоку. Это киберпанк-платформа для когнитивной тренировки мозга, использующая принципы синестезии, строгую валидацию логики и соревновательные механики. 
 
-Проект разработан в рамках хакатона и претендует на уровень **«Великий» (Level 4)**, объединяя сложный Fullstack, нестандартный UI/UX и бизнес-метрики.
+> **Проект разработан в рамках выполнения Технического Задания для 2 этапа отбора в nFactorial Incubator 2026.**
 
 🔗 **[Live Demo (Vercel)](https://neodoku.vercel.app)**  
 🔗 **[API Swagger Docs (Render)](https://neodoku-api.onrender.com/docs)**
@@ -64,3 +64,10 @@
 cd frontend
 npm install
 npm run dev
+
+```
+**Backend:**
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
