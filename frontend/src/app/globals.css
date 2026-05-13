@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+body {
+  @apply bg-slate-950 text-slate-200 antialiased;
+}
+
+/* Кастомные стили для выделения квадратов 3x3 на доске судоку */
+.sudoku-cell {
+  @apply w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-slate-700 text-lg sm:text-xl font-medium transition-colors;
+}
+
+.sudoku-cell input {
+  @apply w-full h-full bg-transparent text-center outline-none focus:bg-indigo-900/50 focus:text-indigo-300 transition-colors;
+}
+
+/* Утолщенные границы для блоков 3x3 */
+.border-r-thick {
+  border-right: 2px solid #64748b;
+}
+
+.border-b-thick {
+  border-bottom: 2px solid #64748b;
+}
