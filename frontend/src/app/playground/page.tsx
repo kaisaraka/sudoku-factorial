@@ -42,6 +42,37 @@ function GameEngine() {
     return `${m}:${s}`;
   };
 
+  const loadFallbackPuzzle = (level: string) => {
+    // ВАЖНО: Это спасет тебя, если бекэнд не будет работать на Vercel!
+    const fallbackPuzzle = [
+      [5, 3, 0, 0, 7, 0, 0, 0, 0],
+      [6, 0, 0, 1, 9, 5, 0, 0, 0],
+      [0, 9, 8, 0, 0, 0, 0, 6, 0],
+      [8, 0, 0, 0, 6, 0, 0, 0, 3],
+      [4, 0, 0, 8, 0, 3, 0, 0, 1],
+      [7, 0, 0, 0, 2, 0, 0, 0, 6],
+      [0, 6, 0, 0, 0, 0, 2, 8, 0],
+      [0, 0, 0, 4, 1, 9, 0, 0, 5],
+      [0, 0, 0, 0, 8, 0, 0, 7, 9]
+    ];
+    const fallbackSolution = [
+      [5, 3, 4, 6, 7, 8, 9, 1, 2],
+      [6, 7, 2, 1, 9, 5, 3, 4, 8],
+      [1, 9, 8, 3, 4, 2, 5, 6, 7],
+      [8, 5, 9, 7, 6, 1, 4, 2, 3],
+      [4, 2, 6, 8, 5, 3, 7, 9, 1],
+      [7, 1, 3, 9, 2, 4, 8, 5, 6],
+      [9, 6, 1, 5, 3, 7, 2, 8, 4],
+      [2, 8, 7, 4, 1, 9, 6, 3, 5],
+      [3, 4, 5, 2, 8, 6, 1, 7, 9]
+    ];
+    setInitialBoard(fallbackPuzzle);
+    setCurrentBoard(JSON.parse(JSON.stringify(fallbackPuzzle)));
+    setSolution(fallbackSolution);
+    setCoachMessage(`Backend offline. Running Local Emergency Protocol [${level.toUpperCase()}].`);
+    setIsActive(true);
+  };
+
   const fetchNewGame = async (level: string) => {
     setLoading(true); setIsActive(false); setGameOver(false); setIsVictory(false); setMistakes(0); setErrors([]); setTime(0);
     try {
@@ -54,7 +85,8 @@ function GameEngine() {
       setCoachMessage(`Protocol [${level.toUpperCase()}] active. 3 attempts remaining.`);
       setIsActive(true);
     } catch (error) {
-      setCoachMessage("System failure. Backend offline.");
+      // Спасительный фоллбек!
+      loadFallbackPuzzle(level);
     }
     setLoading(false);
   };
@@ -104,7 +136,7 @@ function GameEngine() {
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
         if (currentBoard[r][c] === 0) {
-          setCoachMessage(`Hint injected: Row ${r + 1}, Column ${c + 1} requires value [${solution[r][c]}].`);
+          setCoachMessage(`AI Coach Hint: Row ${r + 1}, Column ${c + 1} requires value [${solution[r][c]}].`);
           return;
         }
       }
@@ -161,10 +193,10 @@ function GameEngine() {
         <div className={`w-full max-w-[500px] bg-white/[0.02] backdrop-blur-xl border ${mistakes >= 2 ? 'border-rose-500/30' : 'border-white/10'} rounded-3xl p-6 sm:p-8 transition-colors shadow-2xl`}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 text-zinc-400">
-              <Terminal className="w-4 h-4 text-indigo-400" /> Logic Assistant
+              <Terminal className="w-4 h-4 text-indigo-400" /> AI Logic Assistant
             </h2>
             <button onClick={handleHint} disabled={gameOver || isVictory || loading} className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-full text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-30 border border-white/5 active:scale-95">
-              Force Hint
+              Request Hint
             </button>
           </div>
           <p className="text-zinc-300 text-sm font-light leading-relaxed">{coachMessage}</p>
