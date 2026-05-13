@@ -6,7 +6,18 @@ import { useRouter } from 'next/navigation';
 import { BrainCircuit, ArrowRight, Fingerprint, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// ... (константы PALETTE, DENSITY и функция poissonDisk остаются без изменений)
+const PALETTE = [
+  { r: '0,200,255' }, { r: '160,80,240' }, { r: '30,190,120' },
+  { r: '240,70,100' }, { r: '255,150,40' }, { r: '80,140,255' }, { r: '250,200,0' },
+];
+
+const DENSITY = 50000;
+
+interface Block {
+  bx: number; by: number; size: number; c: typeof PALETTE[0]; num: number | '';
+  a1: number; a2: number; b1: number; b2: number;
+  f1: number; f2: number; phase: number; rotSpeed: number; startRot: number;
+}
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
