@@ -43,7 +43,7 @@ function GameEngine() {
   };
 
   const loadFallbackPuzzle = (level: string) => {
-    // ВАЖНО: Это спасет тебя, если бекэнд не будет работать на Vercel!
+    // Надежный фоллбек, если backend недоступен на Vercel
     const fallbackPuzzle = [
       [5, 3, 0, 0, 7, 0, 0, 0, 0],
       [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -69,7 +69,7 @@ function GameEngine() {
     setInitialBoard(fallbackPuzzle);
     setCurrentBoard(JSON.parse(JSON.stringify(fallbackPuzzle)));
     setSolution(fallbackSolution);
-    setCoachMessage(`Backend offline. Running Local Emergency Protocol [${level.toUpperCase()}].`);
+    setCoachMessage(`Server offline. Running Local Protocol [${level.toUpperCase()}]. 3 attempts remaining.`);
     setIsActive(true);
   };
 
@@ -85,7 +85,6 @@ function GameEngine() {
       setCoachMessage(`Protocol [${level.toUpperCase()}] active. 3 attempts remaining.`);
       setIsActive(true);
     } catch (error) {
-      // Спасительный фоллбек!
       loadFallbackPuzzle(level);
     }
     setLoading(false);
@@ -136,7 +135,7 @@ function GameEngine() {
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
         if (currentBoard[r][c] === 0) {
-          setCoachMessage(`AI Coach Hint: Row ${r + 1}, Column ${c + 1} requires value [${solution[r][c]}].`);
+          setCoachMessage(`AI Logic Hint: Row ${r + 1}, Column ${c + 1} requires value [${solution[r][c]}].`);
           return;
         }
       }
@@ -144,21 +143,22 @@ function GameEngine() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] flex flex-col items-center px-4 sm:px-6 py-8 sm:py-12 font-sans relative overflow-x-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[150px] pointer-events-none z-0" />
+    <div className="min-h-screen bg-[#020202] flex flex-col items-center px-4 sm:px-6 py-8 sm:py-12 font-sans relative overflow-x-hidden">
+      {/* Глобальный фон: Сетка и виньетка */}
+      <div className="absolute inset-0 z-0 opacity-[0.07] pointer-events-none" style={{ backgroundImage: `linear-gradient(#666 1px, transparent 1px), linear-gradient(90deg, #666 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,transparent_15%,#020202_82%)] pointer-events-none" />
 
       <div className="w-full max-w-5xl flex justify-between items-center mb-10 relative z-10">
         <Link href="/dashboard" className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-white/[0.02] px-4 py-2 rounded-full border border-white/5 backdrop-blur-md">
           <ArrowLeft className="w-4 h-4" /> Abort Protocol
         </Link>
-        <div className="text-xl font-medium text-white tracking-tight opacity-80">Neo<span className="text-zinc-500">Doku</span></div>
+        <div className="text-xl font-black text-white tracking-tighter opacity-80">NEO<span className="text-zinc-600">DOKU</span></div>
       </div>
 
       <AnimatePresence>
         {(gameOver || isVictory) && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-50 bg-black/60 backdrop-blur-xl flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} transition={{ type: "spring", stiffness: 300, damping: 25 }} className={`bg-[#050505] border ${isVictory ? 'border-emerald-500/30 shadow-[0_0_50px_-10px_rgba(16,185,129,0.2)]' : 'border-rose-500/30 shadow-[0_0_50px_-10px_rgba(244,63,94,0.2)]'} p-10 sm:p-12 rounded-[2rem] text-center max-w-md w-full relative overflow-hidden`}>
-              <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 blur-[60px] pointer-events-none ${isVictory ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} transition={{ type: "spring", stiffness: 300, damping: 25 }} className={`bg-[#050505] border ${isVictory ? 'border-emerald-500/30' : 'border-rose-500/30'} p-10 sm:p-12 rounded-[2rem] text-center max-w-md w-full relative overflow-hidden`}>
               <div className="relative z-10">
                 {isVictory ? <BrainCircuit className="w-16 h-16 text-emerald-400 mx-auto mb-6" /> : <AlertTriangle className="w-16 h-16 text-rose-400 mx-auto mb-6" />}
                 <h2 className="text-3xl font-medium text-white mb-2 tracking-tight">{isVictory ? 'Matrix Cleared' : 'Connection Terminated'}</h2>
@@ -173,14 +173,14 @@ function GameEngine() {
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }} className="w-full flex flex-col items-center relative z-10">
         <div className="w-full max-w-[500px] flex justify-between items-center mb-8">
-          <div className="flex items-center gap-3 text-zinc-300 bg-white/[0.03] px-5 py-3 rounded-2xl border border-white/5 backdrop-blur-md shadow-lg">
-            <Timer className={`w-4 h-4 ${isActive ? 'text-indigo-400' : 'text-zinc-500'}`} />
+          <div className="flex items-center gap-3 text-zinc-300 bg-black/40 px-5 py-3 rounded-2xl border border-white/5 backdrop-blur-md shadow-lg">
+            <Timer className={`w-4 h-4 ${isActive ? 'text-zinc-300' : 'text-zinc-500'}`} />
             <span className="font-mono text-lg leading-none">{formatTime(time)}</span>
           </div>
-          <button onClick={() => fetchNewGame(difficulty)} className="p-3.5 bg-white/[0.03] hover:bg-white/[0.08] text-zinc-300 rounded-2xl border border-white/5 transition-all shadow-lg active:scale-95">
+          <button onClick={() => fetchNewGame(difficulty)} className="p-3.5 bg-black/40 hover:bg-white/[0.08] text-zinc-300 rounded-2xl border border-white/5 transition-all shadow-lg active:scale-95">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-white' : ''}`} />
           </button>
-          <div className="flex items-center gap-3 text-zinc-300 bg-white/[0.03] px-5 py-3 rounded-2xl border border-white/5 backdrop-blur-md shadow-lg">
+          <div className="flex items-center gap-3 text-zinc-300 bg-black/40 px-5 py-3 rounded-2xl border border-white/5 backdrop-blur-md shadow-lg">
             <AlertTriangle className={`w-4 h-4 ${mistakes > 0 ? 'text-rose-400' : 'text-zinc-500'}`} />
             <span className={`font-mono text-lg leading-none ${mistakes > 0 ? 'text-rose-400' : 'text-white'}`}>{mistakes}/3</span>
           </div>
@@ -190,10 +190,10 @@ function GameEngine() {
           <SudokuBoard initialBoard={initialBoard} currentBoard={currentBoard} onChange={handleCellChange} isLoading={loading} errors={errors} />
         </div>
 
-        <div className={`w-full max-w-[500px] bg-white/[0.02] backdrop-blur-xl border ${mistakes >= 2 ? 'border-rose-500/30' : 'border-white/10'} rounded-3xl p-6 sm:p-8 transition-colors shadow-2xl`}>
+        <div className={`w-full max-w-[500px] bg-black/40 backdrop-blur-xl border ${mistakes >= 2 ? 'border-rose-500/30' : 'border-white/10'} rounded-3xl p-6 sm:p-8 transition-colors shadow-2xl`}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 text-zinc-400">
-              <Terminal className="w-4 h-4 text-indigo-400" /> AI Logic Assistant
+              <Terminal className="w-4 h-4 text-zinc-400" /> AI Logic Assistant
             </h2>
             <button onClick={handleHint} disabled={gameOver || isVictory || loading} className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-full text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-30 border border-white/5 active:scale-95">
               Request Hint
@@ -208,7 +208,7 @@ function GameEngine() {
 
 export default function Playground() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#050505] flex items-center justify-center text-zinc-500 font-mono text-sm tracking-widest uppercase">Initializing Matrix...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#020202] flex items-center justify-center text-zinc-500 font-mono text-sm tracking-widest uppercase">Initializing Matrix...</div>}>
       <GameEngine />
     </Suspense>
   );
